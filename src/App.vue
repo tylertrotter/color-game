@@ -28,22 +28,17 @@ export default {
 					originSquare: [0, 0],
 					position: [7, 2],
 					color: 200,
-					movement: 'bishop', // rook, bishop, queen
-					speed: 1, // 1,2,3,4,5
-					wanderLevel: 1,
-					direction: null,
 					fertility: 1,
 					mutationLevel: 2 
 			},
 			players: [
 				{
 					originSquare: [0, 0],
-					position: [3, 2],
+					position: [3, 10],
 					color: 300,
-					movement: 'rook', // rook, bishop, queen
-					speed: 1, // 1,2,3
-					wanderLevel: 1,
-					direction: 'd',
+					movement: 'bishop', // rook, bishop, queen
+					speed: 2, // 1,2,3
+					direction: 'e',
 					fertility: 1,
 					mutationLevel: 2 
 				},
@@ -169,24 +164,24 @@ export default {
 
 			if(direction === 'w')
 				position[1] = y - 1;
-			else if(direction === 'e') {
-				position[1] = y - 1 * speed;
-				position[0] = x + 1 * speed;
-			}else if(direction === 'd' && this.getSquare(x + 1, y)[1] > 0)
-				position[0] = x + 1 * speed;
-			else if(direction === 'c') {
+			else if(direction === 'e' && this.getSquare(x + speed, y - speed)[1] > 0) {
+				position[1] = y - speed;
+				position[0] = x + speed;
+			}else if(direction === 'd' && this.getSquare(x + speed, y)[1] > 0)
+				position[0] = x + speed;
+			else if(direction === 'c' && this.getSquare(x + speed, y + speed)[1] > 0) {
+				position[1] = y + speed;
+				position[0] = x + speed;
+			}else if(direction === 'x' && this.getSquare(x, y + speed)[1] > 0)
 				position[1] = y + 1 * speed;
-				position[0] = x + 1 * speed;
-			}else if(direction === 'x')
-				position[1] = y + 1 * speed;
-			else if(direction === 'z' && x >= speed) {
-				position[1] = y + 1 * speed;
-				position[0] = x - 1 * speed;
-			}else if(direction === 'a' && x >= speed)
-				position[0] = x - 1 * speed;
-			else if(direction === 'q' && x >= speed) {
-				position[1] = y - 1 * speed;
-				position[0] = x - 1 * speed;
+			else if(direction === 'z' && x >= speed && this.getSquare(x - speed, y + speed)[1] > 0) {
+				position[1] = y + speed;
+				position[0] = x - speed;
+			}else if(direction === 'a' && x >= speed && this.getSquare(x - speed, y)[1] > 0)
+				position[0] = x - speed;
+			else if(direction === 'q' && x >= speed && this.getSquare(x - speed, y - speed)[1] > 0) {
+				position[1] = y - speed;
+				position[0] = x - speed;
 			}else{
 				player.direction = this.getNewDirection(player.movement, direction);
 				this.automaticMove(player);
