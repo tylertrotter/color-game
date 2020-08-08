@@ -120,24 +120,24 @@ export default {
 			const x = this.playerOne.position[0];
 			const y = this.playerOne.position[1];
 
-			if(e.key === 'w' && y > 0 && this.getSquare(x, y - 1)[1] > 0) {
+			if(e.key === 'w' && this.pathIsClear([x, y], [0, -1], 1)) {
 				position[1] = y - 1;
-			}else if(e.key === 'e' && y > 0 && x < this.width-1) {
+			}else if(e.key === 'e' && this.pathIsClear([x, y], [+1, -1], 1)) {
+				position[0] = x + 1;
 				position[1] = y - 1;
+			}else if(e.key === 'd' && this.pathIsClear([x, y], [+1, 0], 1))
 				position[0] = x + 1;
-			}else if(e.key === 'd')
-				position[0] = x + 1;
-			else if(e.key === 'c') {
+			else if(e.key === 'c' && this.pathIsClear([x, y], [+1, +1], 1)) {
 				position[1] = y + 1;
 				position[0] = x + 1;
-			}else if(e.key === 'x')
+			}else if(e.key === 'x' && this.pathIsClear([x, y], [0, +1], 1))
 				position[1] = y + 1;
-			else if(e.key === 'z' && x > 0) {
-				position[1] = y + 1;
+			else if(e.key === 'z' && this.pathIsClear([x, y], [-1, +1], 1)) {
 				position[0] = x - 1;
-			}else if(e.key === 'a' && x > 0)
+				position[1] = y + 1;
+			}else if(e.key === 'a' && this.pathIsClear([x, y], [-1, 0], 1))
 				position[0] = x - 1;
-			else if(e.key === 'q' && x > 0  && y > 0) {
+			else if(e.key === 'q' && this.pathIsClear([x, y], [-1, -1], 1)) {
 				position[1] = y - 1;
 				position[0] = x - 1;
 			}else {
@@ -166,9 +166,9 @@ export default {
 			const x = player.position[0];
 			const y = player.position[1];
 
-			if(direction === 'w' && y >= speed && this.pathIsClear([x, y], [0, -1], speed))
+			if(direction === 'w' && this.pathIsClear([x, y], [0, -1], speed))
 				position[1] = y - speed;
-			else if(direction === 'e' && y >= speed && this.pathIsClear([x, y], [+1, -1], speed)) {
+			else if(direction === 'e' && this.pathIsClear([x, y], [+1, -1], speed)) {
 				position[0] = x + speed;
 				position[1] = y - speed;
 			}else if(direction === 'd' && this.pathIsClear([x, y], [+1, 0], speed))
@@ -178,12 +178,12 @@ export default {
 				position[1] = y + speed;
 			}else if(direction === 'x' && this.pathIsClear([x, y], [0, -1], speed))
 				position[1] = y + 1 * speed;
-			else if(direction === 'z' && x >= speed  && this.pathIsClear([x, y], [-1, +1], speed)) {
+			else if(direction === 'z' && this.pathIsClear([x, y], [-1, +1], speed)) {
 				position[0] = x - speed;
 				position[1] = y + speed;
-			}else if(direction === 'a' && x >= speed && this.pathIsClear([x, y], [-1, 0], speed))
+			}else if(direction === 'a' && this.pathIsClear([x, y], [-1, 0], speed))
 				position[0] = x - speed;
-			else if(direction === 'q' && x >= speed && this.pathIsClear([x, y], [-1, -1], speed)) {
+			else if(direction === 'q' && this.pathIsClear([x, y], [-1, -1], speed)) {
 				position[0] = x - speed;
 				position[1] = y - speed;
 			}else{
@@ -194,10 +194,19 @@ export default {
 			this.paintBoard();
 		},
 		pathIsClear(origin, direction, speed) {
+			const xDestination = origin[0] + direction[0] * speed;
+			const yDestination = origin[1] + direction[1] * speed;
+
+			if(xDestination < 0 || xDestination >= this.width || yDestination < 0 || yDestination >= this.height)
+				return false;
+
 			for (let i = speed; i > 0; i--) {
 				if(this.getSquare(origin[0] + direction[0] * i, origin[1] + direction[1] * i)[1] === 0)
 					return false;
 			}
+
+		
+
 			return true;
 		}
 	}
