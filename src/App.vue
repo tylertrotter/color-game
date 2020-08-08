@@ -25,23 +25,27 @@ export default {
 			height: 60,
 			environment: [],
 			playerOne: {
+					id: 0,
 					originSquare: [0, 0],
-					position: [7, 2],
-					color: 200,
+					position: [3, 10],
+					color: 3,
+					movement: 'queen',
+					speed: 1,
 					fertility: 1,
 					mutationLevel: 2 
 			},
 			players: [
 				{
+					id: 1,
 					originSquare: [0, 0],
 					position: [3, 10],
-					color: 300,
-					movement: 'bishop', // rook, bishop, queen
-					speed: 2, // 1,2,3
+					color: 1,
+					movement: 'bishop',
+					speed: 2,
 					direction: 'e',
 					fertility: 1,
 					mutationLevel: 2 
-				},
+				}
 			]
 		}
 	},
@@ -55,13 +59,15 @@ export default {
 		this.paintBoard();
 		
 		document.addEventListener('keydown', e => { this.handleKeyUp(e) });
+		console.log(this.reproduction());
 	},
 	methods: {
 		handleKeyUp(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			if(e.key === 's' || e.key === ' ')
+			if(e.key === 's' || e.key === ' '){
+				e.preventDefault();
+				e.stopPropagation();
 				this.colorSquare(this.playerOne);
+			}	
 			else
 				this.move(e);
 		},
@@ -115,7 +121,7 @@ export default {
 		getSquare(x, y) {
 			return this.environment[this.width * y + x];
 		},
-		move(e){
+		move(e) {
 			const position = this.playerOne.position;
 			const x = this.playerOne.position[0];
 			const y = this.playerOne.position[1];
@@ -208,6 +214,50 @@ export default {
 		
 
 			return true;
+		},
+		createNewPlayer(parent1, parent2) {
+			this.players.push({
+				originSquare: parent1.position,
+				position: parent1.position,
+				color: this.getAverageColor(parent1.color, parent2.color),
+				movement: 'bishop',
+				speed: this.getAverage(parent1.speed, parent2.speed),
+				// direction: this.getNewDirection(movement),
+				fertility: 1,
+				mutationLevel: 2 
+			});
+		},
+		getAverageColor(color1, color2){
+			const diff = ( ( color1 - color2 + 180 + 360 ) % 360 ) - 180;
+			return (360 + color2 + ( diff / 2 ) ) % 360;
+		},
+		getAverage(a, b) {
+			const min = Math.min(a,b);
+			const max = Math.max(a,b);
+			return (Math.round(Math.random() * (max - min))) + min;
+		},
+		arraysEqual(a1,a2) {
+			return JSON.stringify(a1)==JSON.stringify(a2);
+		},
+		reproduction() {
+			// const allPlayers = this.players.concat(this.playerOne);
+		
+			// // console.log(allPlayers)
+			// const matches = [];
+			// allPlayers.forEach((player, i, a) => {
+			// 	a.forEach((potentialMatch, j) => {
+			// 		if(player.id !== potentialMatch.id) {
+			// 			if(this.arraysEqual(potentialMatch.position, player.position)){
+			// 				a.splice(i, 0);
+			// 				a.splice(j, 0);
+
+			// 				matches.push(potentialMatch, player)
+			// 			}
+			// 		}
+			// 	})
+				
+			// })
+			// console.log(matches)
 		}
 	}
 }
