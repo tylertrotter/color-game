@@ -28,7 +28,7 @@ export default {
 					id: 0,
 					originSquare: [0, 0],
 					position: [3, 10],
-					color: 3,
+					color: 200,
 					movement: 'queen',
 					speed: 1,
 					fertility: 1,
@@ -41,8 +41,30 @@ export default {
 					position: [3, 10],
 					color: 1,
 					movement: 'bishop',
-					speed: 2,
+					speed: 1,
 					direction: 'e',
+					fertility: 1,
+					mutationLevel: 2 
+				},
+				{
+					id: 2,
+					originSquare: [0, 0],
+					position: [5, 10],
+					color: 1,
+					movement: 'bishop',
+					speed: 1,
+					direction: 'e',
+					fertility: 1,
+					mutationLevel: 2 
+				},
+				{
+					id: 3,
+					originSquare: [0, 0],
+					position: [5, 10],
+					color: 1,
+					movement: 'rook',
+					speed: 1,
+					direction: 'd',
 					fertility: 1,
 					mutationLevel: 2 
 				}
@@ -56,10 +78,8 @@ export default {
 	},
 	mounted() {
 		this.generateEnvironment();
-		this.paintBoard();
 		
 		document.addEventListener('keydown', e => { this.handleKeyUp(e) });
-		console.log(this.reproduction());
 	},
 	methods: {
 		handleKeyUp(e) {
@@ -93,7 +113,6 @@ export default {
 			this.players.forEach(player => {
 				this.placePlayer(player);
 			});
-
 		},
 		placePlayer(player) {
 			// direction is a proxy for not playerOne
@@ -111,7 +130,6 @@ export default {
 			const i = this.width * player.position[1] + player.position[0];
 			this.environment[i][0] = player.color;
 
-			this.paintBoard();
 			this.placePlayer(player);
 
 			this.players.forEach(player => {
@@ -196,7 +214,7 @@ export default {
 				player.direction = this.getNewDirection(player.movement, direction);
 				this.automaticMove(player);
 			}
-
+			this.reproduction();
 			this.paintBoard();
 		},
 		pathIsClear(origin, direction, speed) {
@@ -240,24 +258,25 @@ export default {
 			return JSON.stringify(a1)==JSON.stringify(a2);
 		},
 		reproduction() {
-			// const allPlayers = this.players.concat(this.playerOne);
-		
-			// // console.log(allPlayers)
-			// const matches = [];
-			// allPlayers.forEach((player, i, a) => {
-			// 	a.forEach((potentialMatch, j) => {
-			// 		if(player.id !== potentialMatch.id) {
-			// 			if(this.arraysEqual(potentialMatch.position, player.position)){
-			// 				a.splice(i, 0);
-			// 				a.splice(j, 0);
+			const allPlayers = this.players.concat(this.playerOne);
+			const allPlayerPositions = allPlayers.map(player => player.position[0]+','+player.position[1]);
+			var duplicates = allPlayerPositions.reduce(function(acc, el, i, arr) {
+				if (arr.indexOf(el) !== i && acc.indexOf(el) < 0) acc.push(el); return acc;
+			}, []);
 
-			// 				matches.push(potentialMatch, player)
-			// 			}
-			// 		}
-			// 	})
-				
-			// })
-			// console.log(matches)
+			let reproducingPlayers = {};
+
+			allPlayerPositions.forEach((position, i) => {
+				if(duplicates.indexOf(position) > -1){
+					reproducingPlayers[position] ? reproducingPlayers[position].push(allPlayers[i]) : reproducingPlayers[position] = [allPlayers[i]];
+				}
+			});
+
+			reproducingPlayers = Object.values(reproducingPlayers);
+
+			reproducingPlayers.forEach(parents => {
+				console.log(this.getAverageColor(parents[0].color, parents[1].color));
+			});
 		}
 	}
 }
